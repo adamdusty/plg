@@ -1,0 +1,16 @@
+{
+    "version": 8,
+    "configurePresets": [
+        {
+            "name": "common",
+            "hidden": true,
+            "binaryDir": "build/${presetName}",
+            "generator": "Ninja"
+        },
+        {
+            "name": "gcc-x86_64-windows-mingw",
+            "inherits": "common",
+            "toolchainFile": "cmake/toolchains/gcc-x86_64-windows-mingw.cmake"
+        }
+    ]
+}

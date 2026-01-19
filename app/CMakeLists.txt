@@ -1,0 +1,21 @@
+add_library(plg_lib OBJECT)
+
+target_sources(plg_lib
+    PUBLIC
+        FILE_SET plg_lib_headers
+        TYPE HEADERS
+        BASE_DIRS src
+        FILES
+            src/lib.hpp
+    PRIVATE
+        src/lib.cpp
+)
+
+add_executable(plg_app)
+
+target_sources(plg_app
+    PRIVATE
+        src/main.cpp
+)
+
+target_link_libraries(plg_app plg_lib)
