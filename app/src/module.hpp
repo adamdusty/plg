@@ -1,6 +1,7 @@
 #pragma once
 
 #include <expected>
+#include <istream>
 #include <string>
 #include <vector>
 
@@ -10,9 +11,9 @@ struct module_manifest {
     std::string name;
     std::string description;
 
-    static auto deserialize(const std::string&) -> std::expected<module_manifest, std::string> {
-        return module_manifest{.name = "hello", .description = "world"};
-    }
+    auto operator==(const module_manifest&) const -> bool = default;
+
+    static auto deserialize(std::istream& toml) -> std::expected<module_manifest, std::string>;
 };
 
 struct module {

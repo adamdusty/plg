@@ -11,3 +11,5 @@ add_custom_command(TARGET unit_tests POST_BUILD
     COMMAND_EXPAND_LISTS
 )
 endif()
+
+add_test(NAME unit COMMAND unit_tests)

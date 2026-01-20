@@ -1,5 +1,5 @@
 find_package(flecs CONFIG REQUIRED)
-find_package(simdjson CONFIG REQUIRED)
+find_package(tomlplusplus CONFIG REQUIRED)
 
 add_library(plg_lib OBJECT)
 
@@ -16,7 +16,7 @@ target_sources(plg_lib
         src/module.cpp
 )
 
-target_link_libraries(plg_lib PUBLIC flecs::flecs simdjson)
+target_link_libraries(plg_lib PUBLIC flecs::flecs tomlplusplus::tomlplusplus)
 
 add_executable(plg_app)
 

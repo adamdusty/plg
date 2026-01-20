@@ -26,11 +26,11 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(flecs)
 
 FetchContent_Declare(
-    simdjson
-    GIT_REPOSITORY      https://github.com/simdjson/simdjson.git
-    GIT_TAG             980f2ad3afb12729157b44ed33d2bac41b67b54b # v4.2.4
+    tomlplusplus
+    GIT_REPOSITORY      https://github.com/marzer/tomlplusplus.git
+    GIT_TAG             30172438cee64926dc41fdd9c11fb3ba5b2ba9de # v3.4.0
     GIT_SHALLOW         TRUE
     SYSTEM
     FIND_PACKAGE_ARGS   CONFIG
 )
-FetchContent_MakeAvailable(simdjson)
+FetchContent_MakeAvailable(tomlplusplus)

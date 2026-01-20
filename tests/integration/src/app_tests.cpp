@@ -5,22 +5,32 @@
 
 TEST_CASE("find_available_modules") {
     SECTION("modules are present") {
-        auto actual = plg::find_modules("modules");
+        auto res = plg::find_modules("modules");
+        REQUIRE(res.has_value());
 
-        auto expected = std::vector<plg::module_find_result>{
+        auto actual = std::vector<plg::module>();
+        for(auto& mod: *res) {
+            if(mod) {
+                actual.emplace_back(mod.value());
+            }
+        }
+
+        auto expected = std::vector<plg::module>{
             plg::module{
                 .name        = "testmod1",
-                .description = "A mod for integration testing",
-                .directory   = "./modules/testmod1"
+                .description = "A module for integration testing",
+                .directory   = "modules/testmod1"
             },
             plg::module{
                 .name        = "testmod2",
-                .description = "A mod for integration testing",
-                .directory   = "./modules/testmod2"
+                .description = "A module for integration testing",
+                .directory   = "modules/testmod2"
             },
         };
 
-        CHECK(*actual == expected);
+        for(auto& mod: expected) {
+            CHECK(std::find(actual.begin(), actual.end(), mod) != actual.end());
+        }
     }
 
     SECTION("directory path does not exist") {

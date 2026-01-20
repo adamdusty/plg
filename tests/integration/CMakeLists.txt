@@ -17,3 +17,5 @@ add_custom_target(copy_test_data
         "$<TARGET_FILE_DIR:integration_tests>/modules"
 )
 add_dependencies(integration_tests copy_test_data)
+
+add_test(NAME integration COMMAND integration_tests)
