@@ -1,7 +1,9 @@
 #pragma once
 
+#include "sdk/export.hpp"
+
 namespace plg {
 
-auto version() -> int;
+PLG_SDK_EXPORT auto version() -> int;
 
 }
