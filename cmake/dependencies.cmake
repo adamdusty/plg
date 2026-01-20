@@ -13,3 +13,14 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(Catch2)
 
 endif()
+
+
+FetchContent_Declare(
+    flecs
+    GIT_REPOSITORY      https://github.com/SanderMertens/flecs.git
+    GIT_TAG             dcbaf278d15379aadea10421bbcbd3c4ead529a3 # v4.1.4
+    GIT_SHALLOW         TRUE
+    SYSTEM
+    FIND_PACKAGE_ARGS   CONFIG
+)
+FetchContent_MakeAvailable(flecs)

@@ -1,3 +1,5 @@
+find_package(flecs CONFIG REQUIRED)
+
 add_library(plg_lib OBJECT)
 
 target_sources(plg_lib
@@ -7,9 +9,13 @@ target_sources(plg_lib
         BASE_DIRS src
         FILES
             src/lib.hpp
+            src/module.hpp
     PRIVATE
         src/lib.cpp
+        src/module.cpp
 )
+
+target_link_libraries(plg_lib PUBLIC flecs::flecs)
 
 add_executable(plg_app)
 
