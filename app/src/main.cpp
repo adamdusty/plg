@@ -13,11 +13,13 @@ auto main() -> int {
     /* Find all available modules
         - Should the modules directory be hard coded?
     */
-    auto modules = plg::find_available_modules(modules_directory_path);
+    auto modules = plg::find_modules(modules_directory_path);
 
     /* Find all pack defs
         - Should pack directory be hard coded?
     */
+
+    /* Load pack modules */
 
     return 0;
 }

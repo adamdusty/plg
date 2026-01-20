@@ -24,3 +24,13 @@ FetchContent_Declare(
     FIND_PACKAGE_ARGS   CONFIG
 )
 FetchContent_MakeAvailable(flecs)
+
+FetchContent_Declare(
+    simdjson
+    GIT_REPOSITORY      https://github.com/simdjson/simdjson.git
+    GIT_TAG             980f2ad3afb12729157b44ed33d2bac41b67b54b # v4.2.4
+    GIT_SHALLOW         TRUE
+    SYSTEM
+    FIND_PACKAGE_ARGS   CONFIG
+)
+FetchContent_MakeAvailable(simdjson)

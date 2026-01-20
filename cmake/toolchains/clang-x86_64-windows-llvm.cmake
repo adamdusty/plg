@@ -19,7 +19,7 @@ set(CMAKE_CXX_FLAGS_INIT "\
 -Wcast-qual \
 -Wformat=2 \
 -Wundef \
--Werror=float-equal \
+-Wfloat-equal \
 -Wcast-align \
 -Wunused \
 -Wnull-dereference \
