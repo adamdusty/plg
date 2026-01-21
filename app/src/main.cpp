@@ -12,20 +12,8 @@ auto main() -> int {
     auto world = flecs::world{};
 
     /* Find all available modules
-        - Should the modules directory be hard coded?
+        - Find modules with a valid manifest
     */
-    auto modules = plg::find_modules(modules_directory_path);
-    if(!modules.has_value()) {
-        throw std::runtime_error(modules.error());
-    }
-
-    // Remove modules that returned error
-    modules->erase(
-        std::remove_if(
-            modules->begin(), modules->end(), [](const auto& res) { return !res.has_value(); }
-        ),
-        modules->end()
-    );
 
     /* Find all pack defs
         - Should pack directory be hard coded?

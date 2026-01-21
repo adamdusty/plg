@@ -10,6 +10,7 @@ target_sources(plg_lib
         BASE_DIRS src
         FILES
             src/lib.hpp
+            src/dependency.hpp
             src/module.hpp
             src/pack.hpp
             src/version.hpp
@@ -17,6 +18,7 @@ target_sources(plg_lib
         src/lib.cpp
         src/module.cpp
         src/pack.cpp
+        src/version.cpp
 )
 
 target_link_libraries(plg_lib PUBLIC flecs::flecs tomlplusplus::tomlplusplus)
