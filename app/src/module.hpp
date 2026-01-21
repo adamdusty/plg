@@ -8,6 +8,7 @@
 namespace plg {
 
 struct module_manifest {
+    std::string nspace;
     std::string name;
     std::string description;
 
@@ -17,6 +18,7 @@ struct module_manifest {
 };
 
 struct module {
+    std::string nspace;
     std::string name;
     std::string description;
     std::string directory;
@@ -24,7 +26,11 @@ struct module {
     auto operator==(const module&) const -> bool = default;
 };
 
-using module_find_result = std::expected<module, std::string>;
+struct module_find_error {
+    std::string message;
+};
+
+using module_find_result = std::expected<module, module_find_error>;
 auto find_modules(const std::string& dir)
     -> std::expected<std::vector<module_find_result>, std::string>;
 

@@ -19,6 +19,11 @@ auto module_manifest::deserialize(std::istream& toml)
         return std::unexpected(e.what());
     }
 
+    auto nspace = table["namespace"].value<std::string>();
+    if(!nspace) {
+        return std::unexpected("Missing required field: `namespace`");
+    }
+
     auto name = table["name"].value<std::string>();
     if(!name) {
         return std::unexpected("Missing required field: `name`");
@@ -29,7 +34,7 @@ auto module_manifest::deserialize(std::istream& toml)
         return std::unexpected("Missing required field: `description`");
     }
 
-    return module_manifest{.name = *name, .description = *desc};
+    return module_manifest{.nspace = *nspace, .name = *name, .description = *desc};
 }
 
 auto find_modules(const std::string& dir)
@@ -64,15 +69,16 @@ auto find_modules(const std::string& dir)
             if(!file) {
                 auto msg =
                     std::format("Unable to open manifest.toml at: {}", entry.path().string());
-                return std::unexpected(msg);
+                return std::unexpected(module_find_error{msg});
             }
 
             auto man = module_manifest::deserialize(file);
             if(!man.has_value()) {
-                return std::unexpected(man.error());
+                return std::unexpected(module_find_error{man.error()});
             }
 
             return module{
+                .nspace      = man->nspace,
                 .name        = man->name,
                 .description = man->description,
                 .directory   = entry.path().generic_string(),
