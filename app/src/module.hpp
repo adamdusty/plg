@@ -20,8 +20,6 @@ struct module_manifest {
     std::vector<dependency> dependencies;
 
     auto operator==(const module_manifest&) const -> bool = default;
-
-    static auto parse(std::istream& toml) -> std::expected<module_manifest, std::string>;
 };
 
 struct module {

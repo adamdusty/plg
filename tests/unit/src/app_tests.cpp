@@ -2,8 +2,9 @@
 
 #include "dependency.hpp"
 #include "module.hpp"
+#include "parsing.hpp"
 #include "version.hpp"
-#include <sstream>
+#include <toml++/toml.hpp>
 
 TEST_CASE("version parsing") {
     SECTION("With annotation") {
@@ -56,43 +57,126 @@ TEST_CASE("version parsing") {
     }
 }
 
-TEST_CASE("module_manifest deserialization") {
-    constexpr auto toml = R"(
-        namespace = "test"
-        name = "test-module"
-        version = "3.1.2-pre-release"
-        short_description = "A test module"
-        long_description = "A longer description of this test module"
-        
-        dependencies = [
+TEST_CASE("dependency from toml", "[app]") {
+    SECTION("dependency") {
+        auto node = toml::table{
+            {"namespace", "test"},
+            {"name", "module"},
+            {"version", "1.2.3-pre-release"},
+        };
+
+        auto res = plg::parsing::from_toml<plg::dependency>(node);
+        REQUIRE(res.has_value());
+
+        auto expected = plg::dependency{
+            .nspace  = "test",
+            .name    = "module",
+            .version = {1, 2, 3, "pre-release"},
+        };
+
+        CHECK(*res == expected);
+    }
+
+    SECTION("toml node is not a table") {
+        auto node = toml::array{};
+
+        auto res = plg::parsing::from_toml<plg::dependency>(node);
+        CHECK(not res.has_value());
+        CHECK(res.error() == "Expected toml node to be table");
+    }
+
+    SECTION("node is missing fields") {
+        auto node = toml::table{};
+
+        auto res = plg::parsing::from_toml<plg::dependency>(node);
+        CHECK(not res.has_value());
+        CHECK(res.error() == "Missing required field: `namespace`");
+
+        node.emplace("namespace", std::string("test"));
+        res = plg::parsing::from_toml<plg::dependency>(node);
+        CHECK(not res.has_value());
+        CHECK(res.error() == "Missing required field: `name`");
+
+        node.emplace("name", std::string("module"));
+        res = plg::parsing::from_toml<plg::dependency>(node);
+        CHECK(not res.has_value());
+        CHECK(res.error() == "Missing required field: `version`");
+
+        node.emplace("version", std::string("1.2.3"));
+        res = plg::parsing::from_toml<plg::dependency>(node);
+        CHECK(res.has_value());
+    }
+}
+
+TEST_CASE("module manifest from toml", "[app]") {
+    SECTION("module_manifest") {
+        auto node = toml::table{
+            {"namespace", "test"},
+            {"name", "test-module"},
+            {"version", "3.1.2-pre-release"},
+            {"short_description", "A test module"},
+            {"long_description", "A longer description of this test module"},
             {
-                namespace = "test",
-                name = "test-mod-dep1",
-                version = "1.0.0",
+                "dependencies",
+                toml::array{
+                    toml::table{
+                        {"namespace", "test"},
+                        {"name", "test-mod-dep1"},
+                        {"version", "1.0.0"},
+                    },
+                    toml::table{
+                        {"namespace", "test"},
+                        {"name", "test-mod-dep2"},
+                        {"version", "0.1.0"},
+                    },
+                },
             },
-            {
-                namespace = "test",
-                name = "test-mod-dep2",
-                version = "0.1.0",
-            }
-        ]
-    )";
+        };
 
-    auto stream = std::stringstream(toml);
-    auto actual = plg::module_manifest::parse(stream);
-    REQUIRE(actual.has_value());
+        auto expected = plg::module_manifest{
+            .nspace            = "test",
+            .name              = "test-module",
+            .version           = {3, 1, 2, "pre-release"},
+            .short_description = "A test module",
+            .long_description  = "A longer description of this test module",
+            .dependencies      = std::vector<plg::dependency>{
+                {"test", "test-mod-dep1", {1, 0, 0}},
+                {"test", "test-mod-dep2", {0, 1, 0}},
+            },
+        };
 
-    auto expected = plg::module_manifest{
-        .nspace            = "test",
-        .name              = "test-module",
-        .version           = {3, 1, 2, "pre-release"},
-        .short_description = "A test module",
-        .long_description  = "A longer description of this test module",
-        .dependencies      = std::vector<plg::dependency>{
-            {"test", "test-mod-dep1", {1, 0, 0}},
-            {"test", "test-mod-dep2", {0, 1, 0}},
-        },
-    };
+        auto result = plg::parsing::from_toml<plg::module_manifest>(node);
+        REQUIRE(result.has_value());
+        CHECK(*result == expected);
+    }
 
-    CHECK(*actual == expected);
+    SECTION("toml node is not a table") {
+        auto node = toml::array{};
+
+        auto res = plg::parsing::from_toml<plg::module_manifest>(node);
+        CHECK(not res.has_value());
+        CHECK(res.error() == "Expected toml node to be table");
+    }
+
+    SECTION("node is missing fields") {
+        auto node = toml::table{};
+
+        auto res = plg::parsing::from_toml<plg::module_manifest>(node);
+        CHECK(not res.has_value());
+        CHECK(res.error() == "Missing or invalid field: `namespace`");
+
+        node.emplace("namespace", std::string("test"));
+        res = plg::parsing::from_toml<plg::module_manifest>(node);
+        CHECK(not res.has_value());
+        CHECK(res.error() == "Missing or invalid field: `name`");
+
+        node.emplace("name", std::string("module"));
+        res = plg::parsing::from_toml<plg::module_manifest>(node);
+        CHECK(not res.has_value());
+        CHECK(res.error() == "Missing or invalid field: `version`");
+
+        node.emplace("version", std::string("1.2.3"));
+        res = plg::parsing::from_toml<plg::module_manifest>(node);
+        CHECK(res.has_value());
+    }
 }

@@ -14,11 +14,13 @@ target_sources(plg_lib
             src/module.hpp
             src/pack.hpp
             src/version.hpp
+            src/parsing.hpp
     PRIVATE
         src/lib.cpp
         src/module.cpp
         src/pack.cpp
         src/version.cpp
+        src/parsing.cpp
 )
 
 target_link_libraries(plg_lib PUBLIC flecs::flecs tomlplusplus::tomlplusplus)
