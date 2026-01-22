@@ -7,6 +7,7 @@ AlignConsecutiveAssignments:
   AlignCompound: false
   AlignFunctionPointers: false
   PadOperators: true
+AlignOperands: AlignAfterOperator
 AlignTrailingComments: true
 AllowAllConstructorInitializersOnNextLine: true
 AllowShortBlocksOnASingleLine: Empty
@@ -19,11 +20,13 @@ AlwaysBreakBeforeMultilineStrings: false
 AlwaysBreakTemplateDeclarations: Yes
 BinPackArguments: false
 BinPackParameters: false
+BreakBeforeBinaryOperators: NonAssignment
 BreakBeforeBraces: Attach
 BreakBeforeTernaryOperators: true
 BreakConstructorInitializers: AfterColon
 ColumnLimit: 100
 CompactNamespaces: false
+ContinuationIndentWidth: 4
 IndentWidth: 4
 PointerAlignment: Left
 SortIncludes: true
@@ -47,3 +50,6 @@ BreakTemplateDeclarations: Yes
 IndentExternBlock: Indent
 InsertNewlineAtEOF: true
 InsertTrailingCommas: Wrapped
+
+PenaltyBreakAssignment: 100
+PenaltyBreakBeforeFirstCallParameter: 0

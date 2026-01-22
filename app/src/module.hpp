@@ -4,7 +4,6 @@
 #include "version.hpp"
 #include <expected>
 #include <filesystem>
-#include <istream>
 #include <optional>
 #include <string>
 #include <vector>
@@ -23,10 +22,7 @@ struct module_manifest {
 };
 
 struct module {
-    std::string nspace;
-    std::string name;
-    std::string description;
-    version version;
+    module_manifest manifest;
     std::filesystem::path directory;
 
     auto operator==(const module&) const -> bool = default;

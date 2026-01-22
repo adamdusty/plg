@@ -15,6 +15,7 @@ target_sources(plg_lib
             src/pack.hpp
             src/version.hpp
             src/parsing.hpp
+            src/constants.hpp
     PRIVATE
         src/lib.cpp
         src/module.cpp
