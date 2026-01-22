@@ -31,3 +31,8 @@ struct module {
 auto find_modules(const std::string& dir) -> std::expected<std::vector<module>, std::string>;
 
 } // namespace plg
+
+/*
+What exactly is a module?
+
+*/

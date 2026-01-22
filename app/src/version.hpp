@@ -1,9 +1,11 @@
 #pragma once
 
+#include <compare>
 #include <cstdint>
 #include <expected>
 #include <optional>
 #include <string>
+#include <tuple>
 
 namespace plg {
 
@@ -19,11 +21,15 @@ struct version {
     version(std::uint32_t major, std::uint32_t minor, std::uint32_t patch, std::string ann) :
         major(major), minor(minor), patch(patch), annotation(ann) {}
 
-    auto operator==(const version& other) const -> bool {
-        return major == other.major && minor == other.minor && patch == other.patch;
+    static auto parse(const std::string& str) -> std::expected<version, std::string>;
+
+    constexpr auto operator==(const version& other) const -> bool {
+        return std::tie(major, minor, patch) == std::tie(other.major, other.minor, other.patch);
     }
 
-    static auto parse(const std::string& str) -> std::expected<version, std::string>;
+    constexpr auto operator<=>(const version& other) const -> std::strong_ordering {
+        return std::tie(major, minor, patch) <=> std::tie(other.major, other.minor, other.patch);
+    }
 };
 
 } // namespace plg

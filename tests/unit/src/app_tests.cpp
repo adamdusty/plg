@@ -57,6 +57,39 @@ TEST_CASE("version parsing") {
     }
 }
 
+TEST_CASE("version equality") {
+    SECTION("major") {
+        auto ver1 = plg::version(1, 1, 1, "pre");
+        auto ver2 = plg::version(2, 1, 1, "pre");
+
+        CHECK(ver2 > ver1);
+        CHECK(ver1 < ver2);
+    }
+
+    SECTION("minor") {
+        auto ver1 = plg::version(1, 1, 2, "pre");
+        auto ver2 = plg::version(1, 2, 1, "pre");
+
+        CHECK(ver2 > ver1);
+        CHECK(ver1 < ver2);
+    }
+
+    SECTION("patch") {
+        auto ver1 = plg::version(1, 1, 1, "pre");
+        auto ver2 = plg::version(1, 1, 2, "pre");
+
+        CHECK(ver2 > ver1);
+        CHECK(ver1 < ver2);
+    }
+
+    SECTION("equal") {
+        auto ver1 = plg::version(1, 1, 1, "pre");
+        auto ver2 = plg::version(1, 1, 1, "post");
+
+        CHECK(ver1 == ver2);
+    }
+}
+
 TEST_CASE("dependency from toml", "[app]") {
     SECTION("dependency") {
         auto node = toml::table{

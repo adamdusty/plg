@@ -6,7 +6,6 @@
 #include <string>
 #include <vector>
 
-
 namespace plg {
 
 struct pack {
@@ -19,12 +18,6 @@ struct pack {
     auto operator==(const pack&) const -> bool = default;
 };
 
-struct pack_find_error {
-    std::string message;
-};
-
-using pack_find_result = std::expected<pack, pack_find_error>;
-auto find_packs(const std::string& dir)
-    -> std::expected<std::vector<pack_find_result>, std::string>;
+auto find_packs(const std::string& dir) -> std::expected<std::vector<pack>, std::string>;
 
 } // namespace plg
