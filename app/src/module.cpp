@@ -19,7 +19,7 @@ constexpr auto dependency_from_toml(const toml::node& node)
     const auto* tbl = node.as_table();
     auto nspace     = (*tbl)["namespace"].value<std::string>();
     auto name       = (*tbl)["name"].value<std::string>();
-    auto version    = (*tbl)["string"].value<std::string>();
+    auto version    = (*tbl)["version"].value<std::string>();
 
     if(not nspace or not name or not version) {
         return std::unexpected("Missing required field");
@@ -37,8 +37,7 @@ constexpr auto dependency_from_toml(const toml::node& node)
 
 namespace plg {
 
-constexpr auto module_manifest::parse(std::istream& toml)
-    -> std::expected<module_manifest, std::string> {
+auto module_manifest::parse(std::istream& toml) -> std::expected<module_manifest, std::string> {
     auto table = toml::table{};
     try {
         table = toml::parse(toml);
@@ -47,13 +46,23 @@ constexpr auto module_manifest::parse(std::istream& toml)
     }
 
     auto nspace = table["namespace"].value<std::string>();
-    if(!nspace) {
+    if(not nspace) {
         return std::unexpected("Missing required field: `namespace`");
     }
 
     auto name = table["name"].value<std::string>();
-    if(!name) {
+    if(not name) {
         return std::unexpected("Missing required field: `name`");
+    }
+
+    auto version_str = table["version"].value<std::string>();
+    if(not version_str) {
+        return std::unexpected("Missing required field: `version`");
+    }
+
+    auto version = version::parse(*version_str);
+    if(not version) {
+        return std::unexpected("Failed to parse version");
     }
 
     auto sdesc = table["short_description"].value<std::string>();
@@ -71,9 +80,10 @@ constexpr auto module_manifest::parse(std::istream& toml)
     return module_manifest{
         .nspace            = *nspace,
         .name              = *name,
+        .version           = *version,
         .short_description = sdesc,
         .long_description  = ldesc,
-        .dependencies =
+        .dependencies      = dependencies,
     };
 }
 

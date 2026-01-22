@@ -16,6 +16,11 @@
             "name": "clang-x86_64-windows-llvm",
             "inherits": "common",
             "toolchainFile": "cmake/toolchains/clang-x86_64-windows-llvm.cmake"
+        },
+        {
+            "name": "clang-x86_64-linux-llvm",
+            "inherits": "common",
+            "toolchainFile": "cmake/toolchains/clang-x86_64-linux-llvm.cmake"
         }
     ]
 }

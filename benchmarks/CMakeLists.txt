@@ -1,4 +1,4 @@
-find_package(Catch2 3 REQUIRED)
+find_package(Catch2 CONFIG REQUIRED)
 
 add_executable(benchmarks)
 target_sources(benchmarks

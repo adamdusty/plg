@@ -17,11 +17,11 @@ struct module_manifest {
     version version;
     std::optional<std::string> short_description;
     std::optional<std::string> long_description;
-    std::optional<std::vector<dependency>> dependencies;
+    std::vector<dependency> dependencies;
 
     auto operator==(const module_manifest&) const -> bool = default;
 
-    static constexpr auto parse(std::istream& toml) -> std::expected<module_manifest, std::string>;
+    static auto parse(std::istream& toml) -> std::expected<module_manifest, std::string>;
 };
 
 struct module {

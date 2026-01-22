@@ -66,14 +66,14 @@ TEST_CASE("module_manifest deserialization") {
         
         dependencies = [
             {
-                namespace = "test"
-                name = "test-mod-dep1"
-                version = 1.0.0
+                namespace = "test",
+                name = "test-mod-dep1",
+                version = "1.0.0",
             },
             {
-                namespace = "test"
-                name = "test-mod-dep2"
-                version = 0.1.0
+                namespace = "test",
+                name = "test-mod-dep2",
+                version = "0.1.0",
             }
         ]
     )";
