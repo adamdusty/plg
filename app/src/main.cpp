@@ -1,6 +1,5 @@
 #include "module.hpp"
 #include <flecs.h>
-#include <stdexcept>
 
 constexpr auto* modules_directory_path = "modules"; // Load via config or cmd line
 constexpr auto* packs_directory_path   = "packs";   // Load via config or cmd line
@@ -14,6 +13,7 @@ auto main() -> int {
     /* Find all available modules
         - Find modules with a valid manifest
     */
+    auto modules = plg::find_modules(modules_directory_path);
 
     /* Find all pack defs
         - Should pack directory be hard coded?
