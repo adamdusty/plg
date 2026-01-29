@@ -3,6 +3,7 @@
 #include "dependency.hpp"
 #include "version.hpp"
 #include <expected>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -11,8 +12,9 @@ namespace plg {
 struct pack {
     std::string nspace;
     std::string name;
-    std::string description;
     version version;
+    std::optional<std::string> short_description;
+    std::optional<std::string> long_description;
     std::vector<dependency> dependencies;
 
     auto operator==(const pack&) const -> bool = default;

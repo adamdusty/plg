@@ -15,6 +15,9 @@ add_custom_target(copy_test_data
     COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
         "${CMAKE_CURRENT_SOURCE_DIR}/modules"
         "$<TARGET_FILE_DIR:integration_tests>/modules"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
+        "${CMAKE_CURRENT_SOURCE_DIR}/packs"
+        "$<TARGET_FILE_DIR:integration_tests>/packs"
 )
 add_dependencies(integration_tests copy_test_data)
 

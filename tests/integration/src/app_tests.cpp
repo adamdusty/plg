@@ -1,6 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include "module.hpp"
+#include "pack.hpp"
 #include <vector>
 
 TEST_CASE("find_modules") {
@@ -38,36 +39,38 @@ TEST_CASE("find_modules") {
 }
 
 TEST_CASE("Find packs") {
-    // SECTION("packs are present") {
-    //     auto packs = plg::find_packs("packs");
-    //     REQUIRE(packs.has_value());
+    SECTION("packs are present") {
+        auto packs = plg::find_packs("packs");
+        REQUIRE(packs.has_value());
 
-    //     auto expected = std::vector<plg::pack>{
-    //         {
-    //             .nspace      = "test",
-    //             .name        = "pack1",
-    //             .description = "test pack 1",
-    //             .version     = plg::version(0, 1, 0),
-    //             .dependencies =
-    //                 {
-    //                     {.nspace = "test", .name = "mod1", .version = {0, 1, 0}},
-    //                     {.nspace = "test", .name = "mod2", .version = {0, 1, 0}},
-    //                 },
-    //         },
-    //         {
-    //             .nspace       = "test",
-    //             .name         = "pack2",
-    //             .description  = "test pack 2",
-    //             .version      = plg::version(0, 1, 0),
-    //             .dependencies = {
-    //                 {.nspace = "test", .name = "mod3", .version = {0, 1, 0}},
-    //                 {.nspace = "test", .name = "mod4", .version = {0, 1, 0}},
-    //             },
-    //         },
-    //     };
+        auto expected = std::vector<plg::pack>{
+            {
+                .nspace            = "test",
+                .name              = "pack1",
+                .version           = plg::version(1, 2, 3, "alpha"),
+                .short_description = "A pack for testing",
+                .long_description  = "A longer description of this pack",
+                .dependencies =
+                    {
+                        {.nspace = "test", .name = "module1", .version = {1, 2, 3}},
+                        {.nspace = "test", .name = "module2", .version = {0, 2, 4}},
+                    },
+            },
+            {
+                .nspace            = "test",
+                .name              = "pack2",
+                .version           = plg::version(3, 2, 5),
+                .short_description = "A second pack for testing",
+                .long_description  = "A longer description of this second pack",
+                .dependencies      = {
+                    {.nspace = "test", .name = "pack2module1", .version = {10, 25, 859}},
+                    {.nspace = "test", .name = "pack2module2", .version = {3, 0, 1024}},
+                },
+            },
+        };
 
-    //     for(const auto& pack: expected) {
-    //         CHECK(std::find(packs->begin(), packs->end(), pack) != packs->end());
-    //     }
-    // }
+        for(const auto& pack: expected) {
+            CHECK(std::find(packs->begin(), packs->end(), pack) != packs->end());
+        }
+    }
 }

@@ -213,3 +213,47 @@ TEST_CASE("module manifest from toml", "[app]") {
         CHECK(res.has_value());
     }
 }
+
+TEST_CASE("pack from toml", "[app][pack]") {
+    SECTION("pack is valid") {
+        auto node = toml::table{
+            {"namespace", "test"},
+            {"name", "pack"},
+            {"short_description", "A short desc"},
+            {"long_description", "A long desc"},
+            {"version", "1.2.3"},
+            {
+                "dependencies",
+                toml::array{
+                    toml::table{
+                        {"namespace", "test"},
+                        {"name", "module1"},
+                        {"version", "1.0.0"},
+                    },
+                    toml::table{
+                        {"namespace", "test"},
+                        {"name", "module2"},
+                        {"version", "2.0.0"},
+                    },
+                },
+            },
+        };
+
+        auto result = plg::parsing::from_toml<plg::pack>(node);
+        REQUIRE(result.has_value());
+
+        auto expected = plg::pack{
+            .nspace            = "test",
+            .name              = "pack",
+            .version           = plg::version(1, 2, 3),
+            .short_description = "A short desc",
+            .long_description  = "A long desc",
+            .dependencies      = {
+                {"test", "module1", plg::version(1, 0, 0)},
+                {"test", "module2", plg::version(2, 0, 0)},
+            },
+        };
+
+        CHECK(*result == expected);
+    }
+}
