@@ -13,12 +13,12 @@ TEST_CASE("find_modules") {
 
         auto expected = std::vector<plg::module>{
             plg::module{
-                .manifest  = {"test", "testmod1", {0, 1, 0}, std::nullopt, std::nullopt, {}},
-                .directory = "modules/testmod1",
+                .manifest  = {"nspace1", "testmod1", {0, 1, 0}, std::nullopt, std::nullopt, {}},
+                .directory = "modules/nspace1/testmod1",
             },
             plg::module{
-                .manifest  = {"test", "testmod2", {0, 1, 0}, std::nullopt, std::nullopt, {}},
-                .directory = "modules/testmod2",
+                .manifest  = {"nspace2", "testmod2", {0, 1, 0}, std::nullopt, std::nullopt, {}},
+                .directory = "modules/nspace2/testmod2",
             },
         };
 
@@ -33,7 +33,7 @@ TEST_CASE("find_modules") {
     }
 
     SECTION("path is not a directory") {
-        auto modules = plg::find_modules("modules/testmod1/manifest.toml");
+        auto modules = plg::find_modules("modules/nspace1/testmod1/manifest.toml");
         CHECK(!modules.has_value());
     }
 }
