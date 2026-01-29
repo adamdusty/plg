@@ -32,7 +32,8 @@ auto find_modules(const std::string& dir) -> std::expected<std::vector<module>, 
 
 } // namespace plg
 
-/*
-What exactly is a module?
-
+/* Module Interface Design:
+    - Needs
+        - Api to load components and systems
+        - Api to clean up any resources
 */

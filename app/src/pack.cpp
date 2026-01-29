@@ -43,12 +43,15 @@ auto find_packs(const std::string& dir) -> std::expected<std::vector<pack>, std:
     }
 
     return directory_it //
+         | std::views::filter([](const auto& entry) { return entry.is_directory(); })
+         | std::views::transform([](const auto& entry) { return fs::directory_iterator(entry); })
+         | std::views::join //
          | std::views::filter([](const fs::directory_entry& entry) {
                return entry.is_regular_file() && entry.path().extension() == ".toml";
            })
-         | std::views::transform(pack_from_direntry)
-         | std::views::filter([](const auto& pack) { return pack.has_value(); })
-         | std::views::transform([](const auto& pack) { return pack.value(); })
+         | std::views::transform(pack_from_direntry)                           //
+         | std::views::filter([](const auto& opt) { return opt.has_value(); }) //
+         | std::views::transform([](const auto& opt) { return *opt; })
          | std::ranges::to<std::vector<pack>>();
 }
 
