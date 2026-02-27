@@ -12,18 +12,20 @@ auto main(int /*argc*/, char* /*argv*/[]) -> int {
     /* Find all available modules */
     auto modules = plg::find_modules(modules_directory_path);
     if(!modules) {
-        throw std::runtime_error(modules.error());
+        return -1;
     }
 
     /* Find all pack defs */
     auto packs = plg::find_packs(packs_directory_path);
     if(!packs) {
-        throw std::runtime_error(packs.error());
+        return -1;
     }
 
     /* Select pack if not supplied by config or args*/
+    auto pack = packs->front();
 
     /* Load pack modules */
+    for(const auto& mod: pack.dependencies) {}
 
     return 0;
 }

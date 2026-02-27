@@ -35,3 +35,13 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(tomlplusplus)
 target_compile_definitions(tomlplusplus_tomlplusplus INTERFACE TOML_ENABLE_UNRELEASED_FEATURES=1)
+
+FetchContent_Declare(
+    SDL3
+    GIT_REPOSITORY      https://github.com/libsdl-org/SDL.git
+    GIT_TAG             a962f40bbba175e9716557a25d5d7965f134a3d3 # v3.4.0
+    GIT_SHALLOW         TRUE
+    SYSTEM
+    OVERRIDE_FIND_PACKAGE
+)
+FetchContent_MakeAvailable(SDL3)

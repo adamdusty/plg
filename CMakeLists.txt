@@ -11,6 +11,7 @@ endif()
 
 add_subdirectory(sdk)
 add_subdirectory(app)
+add_subdirectory(core)
 
 if(BUILD_BENCHMARKS)
     add_subdirectory(benchmarks)

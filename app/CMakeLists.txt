@@ -1,5 +1,6 @@
 find_package(flecs CONFIG REQUIRED)
 find_package(tomlplusplus CONFIG REQUIRED)
+find_package(SDL3 CONFIG REQUIRED)
 
 add_library(plg_lib OBJECT)
 
@@ -24,7 +25,7 @@ target_sources(plg_lib
         src/parsing.cpp
 )
 
-target_link_libraries(plg_lib PUBLIC flecs::flecs tomlplusplus::tomlplusplus)
+target_link_libraries(plg_lib PUBLIC flecs::flecs tomlplusplus::tomlplusplus SDL3::SDL3)
 
 add_executable(plg_app)
 
