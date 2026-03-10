@@ -6,10 +6,15 @@
 #include <flecs.h>
 #include <plg/sdk.hpp>
 #include <ranges>
+#include <vector>
 
-auto log(const char* msg) -> void {
-    ecs_log(-1, msg);
-}
+#if __linux__
+constexpr auto input_name     = "core_input.so";
+constexpr auto rendering_name = "core_rendering.so";
+#else
+constexpr auto input_name     = "core_input.dll";
+constexpr auto rendering_name = "core_input.dll";
+#endif
 
 auto main(int /*argc*/, char* /*argv*/[]) -> int {
     auto base_path = std::filesystem::path(SDL_GetBasePath());
@@ -25,27 +30,27 @@ auto main(int /*argc*/, char* /*argv*/[]) -> int {
     world.set<plg::window>(window);
 
     auto mod_paths = std::vector<std::filesystem::path>();
-    mod_paths.emplace_back(base_path / "mods" / "core_rendering.dll");
-    mod_paths.emplace_back(base_path / "mods" / "core_input.dll");
+    mod_paths.emplace_back(base_path / "mods" / input_name);
+    mod_paths.emplace_back(base_path / "mods" / rendering_name);
 
-    log("loading binary");
+    SDL_Log("loading binary");
     auto mods = mod_paths
               | std::ranges::views::transform([](auto& path) { return plg::load_binary(path); })
               | std::ranges::views::filter([](auto b) { return b.has_value(); })
               | std::ranges::views::transform([](auto b) { return *b; })
               | std::ranges::to<std::vector>();
 
-    log("initializing");
+    SDL_Log("initializing");
     std::ranges::for_each(mods, [&](auto mod) {
         if(mod.initialize != nullptr) {
             mod.initialize(world);
         }
     });
 
-    log("progress");
-    while(!world.get<plg::quit>()) {
-        world.progress();
-    }
+    SDL_Log("progress");
+    // while(!world.get<plg::quit>()) {
+    //     world.progress();
+    // }
 
     SDL_DestroyWindow(window);
 

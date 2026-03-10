@@ -4,9 +4,10 @@ endif()
 
 find_package(Vulkan REQUIRED)
 find_package(volk CONFIG REQUIRED)
+find_package(VulkanMemoryAllocator CONFIG REQUIRED)
 
 add_library(core_rendering MODULE)
-target_link_libraries(core_rendering plg::sdk volk)
+target_link_libraries(core_rendering plg::sdk volk GPUOpen::VulkanMemoryAllocator)
 target_compile_definitions(core_rendering PRIVATE VK_NO_PROTOTYPES)
 target_sources(core_rendering
     PUBLIC

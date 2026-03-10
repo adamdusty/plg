@@ -55,3 +55,14 @@ FetchContent_Declare(
     OVERRIDE_FIND_PACKAGE
 )
 FetchContent_MakeAvailable(volk)
+
+
+FetchContent_Declare(
+    VulkanMemoryAllocator
+    GIT_REPOSITORY      https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git
+    GIT_TAG             b3cbbb43ea3a506dffe10759e205a41c27c35ae2 # master 3/9/2026
+    GIT_SHALLOW         TRUE
+    SYSTEM
+    OVERRIDE_FIND_PACKAGE
+)
+FetchContent_MakeAvailable(VulkanMemoryAllocator)
