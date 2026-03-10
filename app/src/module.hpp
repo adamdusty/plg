@@ -1,39 +1,22 @@
 #pragma once
 
-#include "dependency.hpp"
-#include "version.hpp"
+#include <SDL3/SDL_loadso.h>
 #include <expected>
 #include <filesystem>
-#include <optional>
+#include <flecs.h>
 #include <string>
-#include <vector>
 
 namespace plg {
 
-struct module_manifest {
-    std::string nspace;
-    std::string name;
-    version version;
-    std::optional<std::string> short_description;
-    std::optional<std::string> long_description;
-    std::vector<dependency> dependencies;
-
-    auto operator==(const module_manifest&) const -> bool = default;
-};
-
 struct module {
-    module_manifest manifest;
-    std::filesystem::path directory;
+    using init   = void (*)(ecs_world_t*);
+    using deinit = void (*)(ecs_world_t*);
 
-    auto operator==(const module&) const -> bool = default;
+    SDL_SharedObject* handle = nullptr;
+    init initialize          = nullptr;
+    deinit deinitialize      = nullptr;
 };
 
-auto find_modules(const std::string& dir) -> std::expected<std::vector<module>, std::string>;
+auto load_binary(const std::filesystem::path& path) -> std::expected<module, std::string>;
 
 } // namespace plg
-
-/* Module Interface Design:
-    - Needs
-        - Api to load components and systems
-        - Api to clean up any resources
-*/

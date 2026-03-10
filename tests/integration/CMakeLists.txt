@@ -1,3 +1,11 @@
+add_library(test_mod MODULE src/testmod.cpp)
+set_target_properties(test_mod PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/tests/integration/modules/test/mod"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/tests/integration/modules/test/mod" # For Windows/.dll support
+    PREFIX "" # Optional: removes 'lib' prefix (e.g., module.so instead of libmodule.so)
+)
+target_link_libraries(test_mod PRIVATE flecs::flecs)
+
 add_executable(integration_tests
     src/app_tests.cpp
 )

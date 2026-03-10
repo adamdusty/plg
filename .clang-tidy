@@ -21,8 +21,8 @@ Checks: "*,
 
 CheckOptions:
   - key: readability-identifier-length.IgnoredVariableNames
-    value: 'a|b|x|y|z'
+    value: 'a|b|x|y|z|_'
   - key: readability-identifier-length.IgnoredParameterNames
-    value: 'a|b|x|y|z'
+    value: 'a|b|x|y|z|_'
   - key: modernize-use-trailing-return-type.TransformLambdas
     value: none

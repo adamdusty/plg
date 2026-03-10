@@ -1,11 +1,10 @@
+find_package(SDL3 CONFIG REQUIRED)
+find_package(flecs CONFIG REQUIRED)
+
 add_library(plg_sdk SHARED)
 add_library(plg::sdk ALIAS plg_sdk)
 
-include(GenerateExportHeader)
-generate_export_header(
-    plg_sdk
-    EXPORT_FILE_NAME "export/sdk/export.hpp"
-)
+target_link_libraries(plg_sdk PUBLIC flecs::flecs SDL3::SDL3)
 
 target_sources(plg_sdk
 
@@ -19,7 +18,14 @@ target_sources(plg_sdk
             TYPE HEADERS
             BASE_DIRS include
             FILES
-                include/sdk/sdk.hpp
+                include/plg/sdk.hpp
+                include/plg/logging.hpp
     PRIVATE
         src/sdk.cpp
+)
+
+include(GenerateExportHeader)
+generate_export_header(
+    plg_sdk
+    EXPORT_FILE_NAME "export/sdk/export.hpp"
 )

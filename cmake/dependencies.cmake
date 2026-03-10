@@ -45,3 +45,13 @@ FetchContent_Declare(
     OVERRIDE_FIND_PACKAGE
 )
 FetchContent_MakeAvailable(SDL3)
+
+FetchContent_Declare(
+    volk
+    GIT_REPOSITORY      https://github.com/zeux/volk.git
+    GIT_TAG             57cc6cb5bd8d5f09c5c56a6888b19043b275ec5c # master 3/9/2026
+    GIT_SHALLOW         TRUE
+    SYSTEM
+    OVERRIDE_FIND_PACKAGE
+)
+FetchContent_MakeAvailable(volk)
