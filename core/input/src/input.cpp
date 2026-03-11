@@ -28,6 +28,7 @@ auto register_systems(const flecs::world& wld) -> void {
 
 extern "C" {
     CORE_INPUT_EXPORT auto initialize(ecs_world_t* world) -> void {
+        SDL_Log("Initializing input plugin");
         register_systems(flecs::world{world});
     }
 

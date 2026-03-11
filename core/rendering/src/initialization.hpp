@@ -16,5 +16,8 @@ auto create_device(VkPhysicalDevice physical_device, std::uint32_t family) -> Vk
 auto get_queue(VkDevice device, std::uint32_t index) -> VkQueue;
 auto create_allocator(VkInstance inst, VkPhysicalDevice phys_device, VkDevice dev) -> VmaAllocator;
 auto get_surface(SDL_Window* window, VkInstance instance) -> VkSurfaceKHR;
+auto get_surface_capabilities(VkPhysicalDevice dev, VkSurfaceKHR surf) -> VkSurfaceCapabilitiesKHR;
+auto create_swapchain(VkDevice dev, VkSurfaceKHR surf, VkSurfaceCapabilitiesKHR caps)
+    -> VkSwapchainKHR;
 
 } // namespace core::rendering

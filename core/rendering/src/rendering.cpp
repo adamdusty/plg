@@ -50,8 +50,13 @@ extern "C" {
         auto allocator = core::rendering::create_allocator(instance, physical_device, device);
         SDL_Log("Created VMA allocator");
 
-        auto window  = world.get<plg::window>();
-        auto surface = core::rendering::get_surface(window, instance);
+        auto window       = world.get<plg::window>();
+        auto surface      = core::rendering::get_surface(window, instance);
+        auto surface_caps = core::rendering::get_surface_capabilities(physical_device, surface);
+        SDL_Log("Acquired surface");
+
+        auto swapchain = core::rendering::create_swapchain(device, surface, surface_caps);
+        SDL_Log("Created swapchain");
     }
 
     CORE_RENDERING_EXPORT auto deinitialize(ecs_world_t* _) -> void {}

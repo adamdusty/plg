@@ -20,6 +20,7 @@ target_sources(core_rendering
         src/initialization.hpp
         src/initialization.cpp
         src/rendering.cpp
+        src/vma.cpp
 )
 
 

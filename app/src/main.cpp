@@ -33,12 +33,14 @@ auto main(int /*argc*/, char* /*argv*/[]) -> int {
     mod_paths.emplace_back(base_path / "mods" / input_name);
     mod_paths.emplace_back(base_path / "mods" / rendering_name);
 
-    SDL_Log("loading binary");
+    SDL_Log("loading binaries");
     auto mods = mod_paths
               | std::ranges::views::transform([](auto& path) { return plg::load_binary(path); })
               | std::ranges::views::filter([](auto b) { return b.has_value(); })
               | std::ranges::views::transform([](auto b) { return *b; })
               | std::ranges::to<std::vector>();
+
+    SDL_Log("Loaded %lu binaries", mods.size());
 
     SDL_Log("initializing");
     std::ranges::for_each(mods, [&](auto mod) {

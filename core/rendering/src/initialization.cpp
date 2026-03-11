@@ -152,4 +152,35 @@ auto get_surface(SDL_Window* window, VkInstance instance) -> VkSurfaceKHR {
     return surface;
 }
 
+auto get_surface_capabilities(VkPhysicalDevice dev, VkSurfaceKHR surf) -> VkSurfaceCapabilitiesKHR {
+    VkSurfaceCapabilitiesKHR caps;
+    check(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(dev, surf, &caps));
+
+    return caps;
+}
+
+auto create_swapchain(VkDevice dev, VkSurfaceKHR surf, VkSurfaceCapabilitiesKHR caps)
+    -> VkSwapchainKHR {
+    auto image_format = VK_FORMAT_B8G8R8A8_SRGB;
+    auto create_info  = VkSwapchainCreateInfoKHR{
+         .sType            = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
+         .surface          = surf,
+         .minImageCount    = caps.minImageCount,
+         .imageFormat      = image_format,
+         .imageColorSpace  = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR,
+         .imageExtent      = {.width = 640, .height = 480},
+         .imageArrayLayers = 1,
+         .imageUsage       = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+         .preTransform     = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR,
+         .compositeAlpha   = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
+         .presentMode      = VK_PRESENT_MODE_FIFO_KHR,
+         .oldSwapchain     = nullptr,
+    };
+
+    VkSwapchainKHR swapchain = nullptr;
+    check(vkCreateSwapchainKHR(dev, &create_info, nullptr, &swapchain));
+
+    return swapchain;
+}
+
 } // namespace core::rendering
