@@ -57,6 +57,13 @@ extern "C" {
 
         auto swapchain = core::rendering::create_swapchain(device, surface, surface_caps);
         SDL_Log("Created swapchain");
+
+        auto swapchain_images      = core::rendering::get_swapchain_images(device, swapchain);
+        auto swapchain_image_views = std::vector<VkImageView>(swapchain_images.size());
+
+        auto depth_fmt  = core::rendering::get_depth_format(physical_device);
+        auto depth_img  = core::rendering::create_depth_image(allocator, depth_fmt);
+        auto depth_view = core::rendering::create_depth_view(device, depth_img, depth_fmt);
     }
 
     CORE_RENDERING_EXPORT auto deinitialize(ecs_world_t* _) -> void {}

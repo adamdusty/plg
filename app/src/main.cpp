@@ -13,7 +13,7 @@ constexpr auto input_name     = "core_input.so";
 constexpr auto rendering_name = "core_rendering.so";
 #else
 constexpr auto input_name     = "core_input.dll";
-constexpr auto rendering_name = "core_input.dll";
+constexpr auto rendering_name = "core_rendering.dll";
 #endif
 
 auto main(int /*argc*/, char* /*argv*/[]) -> int {

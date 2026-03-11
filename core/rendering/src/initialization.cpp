@@ -183,4 +183,81 @@ auto create_swapchain(VkDevice dev, VkSurfaceKHR surf, VkSurfaceCapabilitiesKHR 
     return swapchain;
 }
 
+auto get_swapchain_images(VkDevice dev, VkSwapchainKHR swapchain) -> std::vector<VkImage> {
+    std::uint32_t count = 0;
+    check(vkGetSwapchainImagesKHR(dev, swapchain, &count, nullptr));
+    auto images = std::vector<VkImage>(count);
+    check(vkGetSwapchainImagesKHR(dev, swapchain, &count, images.data()));
+
+    return images;
+}
+
+auto get_depth_format(VkPhysicalDevice dev) -> VkFormat {
+    auto formats = std::vector<VkFormat>{
+        VK_FORMAT_D32_SFLOAT_S8_UINT,
+        VK_FORMAT_D24_UNORM_S8_UINT,
+    };
+
+    auto format = VK_FORMAT_UNDEFINED;
+
+    for(auto fmt: formats) {
+        auto props = VkFormatProperties2{.sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2};
+        vkGetPhysicalDeviceFormatProperties2(dev, fmt, &props);
+        if((props.formatProperties.optimalTilingFeatures
+            & VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT)
+           != 0U) {
+            format = fmt;
+            break;
+        }
+    }
+
+    return format;
+}
+
+auto create_depth_image(VmaAllocator allocator, VkFormat format) -> VkImage {
+    auto create_info = VkImageCreateInfo{
+        .sType     = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+        .imageType = VK_IMAGE_TYPE_2D,
+        .format    = format,
+        .extent{.width = 640, .height = 480, .depth = 1},
+        .mipLevels     = 1,
+        .arrayLayers   = 1,
+        .samples       = VK_SAMPLE_COUNT_1_BIT,
+        .tiling        = VK_IMAGE_TILING_OPTIMAL,
+        .usage         = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+        .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+    };
+
+    auto alloc_info = VmaAllocationCreateInfo{
+        .flags = VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT,
+        .usage = VMA_MEMORY_USAGE_AUTO,
+    };
+
+    VmaAllocation image_allocation = nullptr;
+    VkImage image                  = nullptr;
+    check(vmaCreateImage(allocator, &create_info, &alloc_info, &image, &image_allocation, nullptr));
+
+    return image;
+}
+
+auto create_depth_view(VkDevice dev, VkImage image, VkFormat format) -> VkImageView {
+    auto create_info = VkImageViewCreateInfo{
+        .sType    = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+        .image    = image,
+        .viewType = VK_IMAGE_VIEW_TYPE_2D,
+        .format   = format,
+        .subresourceRange =
+            {
+                .aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
+                .levelCount = 1,
+                .layerCount = 1,
+            },
+    };
+
+    VkImageView view = nullptr;
+    check(vkCreateImageView(dev, &create_info, nullptr, &view));
+
+    return view;
+}
+
 } // namespace core::rendering

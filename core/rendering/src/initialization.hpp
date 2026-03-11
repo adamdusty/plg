@@ -19,5 +19,9 @@ auto get_surface(SDL_Window* window, VkInstance instance) -> VkSurfaceKHR;
 auto get_surface_capabilities(VkPhysicalDevice dev, VkSurfaceKHR surf) -> VkSurfaceCapabilitiesKHR;
 auto create_swapchain(VkDevice dev, VkSurfaceKHR surf, VkSurfaceCapabilitiesKHR caps)
     -> VkSwapchainKHR;
+auto get_swapchain_images(VkDevice dev, VkSwapchainKHR swapchain) -> std::vector<VkImage>;
+auto get_depth_format(VkPhysicalDevice dev) -> VkFormat;
+auto create_depth_image(VmaAllocator allocator, VkFormat format) -> VkImage;
+auto create_depth_view(VkDevice dev, VkImage image, VkFormat format) -> VkImageView;
 
 } // namespace core::rendering
