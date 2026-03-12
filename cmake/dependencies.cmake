@@ -56,7 +56,6 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(volk)
 
-
 FetchContent_Declare(
     VulkanMemoryAllocator
     GIT_REPOSITORY      https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git
@@ -66,3 +65,23 @@ FetchContent_Declare(
     OVERRIDE_FIND_PACKAGE
 )
 FetchContent_MakeAvailable(VulkanMemoryAllocator)
+
+FetchContent_Declare(
+    tinyobjloader
+    GIT_REPOSITORY      https://github.com/tinyobjloader/tinyobjloader.git
+    GIT_TAG             966edceaf8cdca7996c4e9a1c5ced2938de63366 # master 3/11/2026
+    GIT_SHALLOW         TRUE
+    SYSTEM
+    OVERRIDE_FIND_PACKAGE
+)
+FetchContent_MakeAvailable(tinyobjloader)
+
+FetchContent_Declare(
+    glm
+    GIT_REPOSITORY      https://github.com/g-truc/glm.git
+    GIT_TAG             8d1fd52e5ab5590e2c81768ace50c72bae28f2ed # 1.0.3
+    GIT_SHALLOW         TRUE
+    SYSTEM
+    OVERRIDE_FIND_PACKAGE
+)
+FetchContent_MakeAvailable(glm)

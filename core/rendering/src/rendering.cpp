@@ -1,10 +1,12 @@
 #include "rendering/export.hpp"
 
+#include "components.hpp"
 #include "initialization.hpp"
 #include <SDL3/SDL.h>
 #include <cstdint>
 #include <flecs.h>
 #include <plg/sdk.hpp>
+#include <tiny_obj_loader.h>
 #include <volk.h>
 #include <vulkan/vulkan.h>
 
@@ -15,6 +17,7 @@ extern "C" {
         SDL_Log("Initializing core rendering module");
 
         auto world = flecs::world{wld};
+        world.component<core::rendering::vertex>();
 
         volkInitialize();
 
@@ -64,6 +67,83 @@ extern "C" {
         auto depth_fmt  = core::rendering::get_depth_format(physical_device);
         auto depth_img  = core::rendering::create_depth_image(allocator, depth_fmt);
         auto depth_view = core::rendering::create_depth_view(device, depth_img, depth_fmt);
+
+        auto attrib    = tinyobj::attrib_t{};
+        auto shapes    = std::vector<tinyobj::shape_t>();
+        auto materials = std::vector<tinyobj::material_t>();
+        if(!tinyobj::LoadObj(
+               &attrib,
+               &shapes,
+               &materials,
+               nullptr,
+               nullptr,
+               R"(C:\Users\adamd\dev\plg\core\rendering\assets\teapot.obj)"
+           )) {
+            SDL_Log("Failed to load obj");
+        }
+
+        const VkDeviceSize index_count = shapes[0].mesh.indices.size();
+        auto vertices                  = std::vector<core::rendering::vertex>();
+        auto indices                   = std::vector<std::uint16_t>();
+
+        for(auto& index: shapes.at(0).mesh.indices) {
+            auto vert = core::rendering::vertex{
+                .position =
+                    {
+                        attrib.vertices.at(index.vertex_index * 3),
+                        -attrib.vertices.at(index.vertex_index * 3 + 1),
+                        attrib.vertices.at(index.vertex_index * 3 + 2),
+                    },
+                .normal =
+                    {
+                        attrib.vertices.at(index.normal_index * 3),
+                        -attrib.vertices.at(index.normal_index * 3 + 1),
+                        attrib.vertices.at(index.normal_index * 3 + 2),
+                    },
+                .uv =
+                    {
+                        attrib.texcoords.at(index.texcoord_index * 2),
+                        1.0 - attrib.texcoords.at(index.texcoord_index * 2 + 1),
+                    },
+            };
+
+            vertices.emplace_back(vert);
+            indices.emplace_back(indices.size());
+        }
+
+        VkDeviceSize vertex_buffer_size = (sizeof(core::rendering::vertex) * vertices.size());
+        VkDeviceSize index_buffer_size  = (sizeof(std::uint16_t) * indices.size());
+        auto buffer_create_info         = VkBufferCreateInfo{
+                    .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+                    .size  = vertex_buffer_size + index_buffer_size,
+                    .usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+        };
+
+        auto alloc_info = VmaAllocationCreateInfo{
+            .flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT
+                   | VMA_ALLOCATION_CREATE_HOST_ACCESS_ALLOW_TRANSFER_INSTEAD_BIT
+                   | VMA_ALLOCATION_CREATE_MAPPED_BIT,
+            .usage = VMA_MEMORY_USAGE_AUTO,
+        };
+        auto buffer_alloc_info = VmaAllocationInfo{};
+
+        VkBuffer geometry_buffer        = nullptr;
+        VmaAllocation buffer_allocation = nullptr;
+        vmaCreateBuffer(
+            allocator,
+            &buffer_create_info,
+            &alloc_info,
+            &geometry_buffer,
+            &buffer_allocation,
+            &buffer_alloc_info
+        );
+
+        std::memcpy(buffer_alloc_info.pMappedData, vertices.data(), vertex_buffer_size);
+        std::memcpy(
+            ((char*)buffer_alloc_info.pMappedData) + vertex_buffer_size,
+            vertices.data(),
+            vertex_buffer_size
+        );
     }
 
     CORE_RENDERING_EXPORT auto deinitialize(ecs_world_t* _) -> void {}
