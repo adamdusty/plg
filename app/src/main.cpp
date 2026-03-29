@@ -54,6 +54,13 @@ auto main(int /*argc*/, char* /*argv*/[]) -> int {
     //     world.progress();
     // }
 
+    SDL_Log("deinitializing");
+    std::ranges::for_each(mods, [&](auto mod) {
+        if(mod.deinitialize != nullptr) {
+            mod.deinitialize(world);
+        }
+    });
+
     SDL_DestroyWindow(window);
 
     return 0;

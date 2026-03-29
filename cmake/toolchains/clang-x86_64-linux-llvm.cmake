@@ -7,6 +7,9 @@ set(CMAKE_CXX_COMPILER clang++)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+
 set(CMAKE_CXX_FLAGS_INIT "\
 -fstack-protector-strong \
 -fcf-protection=full \

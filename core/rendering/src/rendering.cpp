@@ -4,13 +4,31 @@
 #include "initialization.hpp"
 #include <SDL3/SDL.h>
 #include <cstdint>
+#include <cstring>
 #include <flecs.h>
+#include <glm/mat4x4.hpp>
 #include <plg/sdk.hpp>
 #include <tiny_obj_loader.h>
 #include <volk.h>
 #include <vulkan/vulkan.h>
 
-constexpr std::uint32_t device_index = 0;
+constexpr std::uint32_t device_index     = 0;
+constexpr std::uint32_t frames_in_flight = 2;
+
+struct shader_data {
+    glm::mat4 projection;
+    glm::mat4 view;
+    std::array<glm::mat4, 3> model;
+    glm::vec4 light_pos    = {0.0f, -10.0f, 10.0f, 0.0f};
+    std::uint32_t selected = 1;
+};
+
+struct shader_data_buffer {
+    VmaAllocation allocation          = VK_NULL_HANDLE;
+    VmaAllocationInfo allocation_info = {};
+    VkBuffer buffer                   = VK_NULL_HANDLE;
+    VkDeviceAddress address           = {};
+};
 
 extern "C" {
     CORE_RENDERING_EXPORT auto initialize(ecs_world_t* wld) -> void {
@@ -77,10 +95,12 @@ extern "C" {
                &materials,
                nullptr,
                nullptr,
-               R"(C:\Users\adamd\dev\plg\core\rendering\assets\teapot.obj)"
+               R"(/home/ad/dev/plg/core/rendering/assets/teapot.obj)"
            )) {
             SDL_Log("Failed to load obj");
         }
+
+        SDL_Log("Loaded mesh");
 
         const VkDeviceSize index_count = shapes[0].mesh.indices.size();
         auto vertices                  = std::vector<core::rendering::vertex>();
@@ -100,11 +120,10 @@ extern "C" {
                         -attrib.vertices.at(index.normal_index * 3 + 1),
                         attrib.vertices.at(index.normal_index * 3 + 2),
                     },
-                .uv =
-                    {
-                        attrib.texcoords.at(index.texcoord_index * 2),
-                        1.0 - attrib.texcoords.at(index.texcoord_index * 2 + 1),
-                    },
+                .uv = {
+                    attrib.texcoords.at(index.texcoord_index * 2),
+                    1.0 - attrib.texcoords.at(index.texcoord_index * 2 + 1),
+                },
             };
 
             vertices.emplace_back(vert);
@@ -114,9 +133,9 @@ extern "C" {
         VkDeviceSize vertex_buffer_size = (sizeof(core::rendering::vertex) * vertices.size());
         VkDeviceSize index_buffer_size  = (sizeof(std::uint16_t) * indices.size());
         auto buffer_create_info         = VkBufferCreateInfo{
-                    .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
-                    .size  = vertex_buffer_size + index_buffer_size,
-                    .usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+            .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+            .size  = vertex_buffer_size + index_buffer_size,
+            .usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
         };
 
         auto alloc_info = VmaAllocationCreateInfo{
@@ -144,6 +163,33 @@ extern "C" {
             vertices.data(),
             vertex_buffer_size
         );
+
+        auto shader_data_buffers = std::array<shader_data_buffer, frames_in_flight>();
+        auto command_buffers     = std::array<VkCommandBuffer, frames_in_flight>();
+
+        for(auto i = 0; i < frames_in_flight; i++) {
+            auto buffer_ci = VkBufferCreateInfo{
+                .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+                .size  = sizeof(shader_data),
+                .usage = VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT,
+            };
+
+            auto alloc_ci = VmaAllocationCreateInfo{
+                .flags = VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT
+                       | VMA_ALLOCATION_CREATE_HOST_ACCESS_ALLOW_TRANSFER_INSTEAD_BIT
+                       | VMA_ALLOCATION_CREATE_MAPPED_BIT,
+                .usage = VMA_MEMORY_USAGE_AUTO,
+            };
+
+            vmaCreateBuffer(
+                allocator,
+                &buffer_ci,
+                &alloc_ci,
+                &shader_data_buffers.at(i).buffer,
+                &shader_data_buffers.at(i).allocation,
+                &shader_data_buffers.at(i).allocation_info
+            );
+        }
     }
 
     CORE_RENDERING_EXPORT auto deinitialize(ecs_world_t* _) -> void {}
