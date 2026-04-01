@@ -1,3 +1,4 @@
+.justfile
 .clangd
 .idea/
 .vs/

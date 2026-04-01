@@ -165,7 +165,7 @@ extern "C" {
         );
 
         auto shader_data_buffers = std::array<shader_data_buffer, frames_in_flight>();
-        auto command_buffers     = std::array<VkCommandBuffer, frames_in_flight>();
+        // auto command_buffers     = std::array<VkCommandBuffer, frames_in_flight>();
 
         for(auto i = 0; i < frames_in_flight; i++) {
             auto buffer_ci = VkBufferCreateInfo{
@@ -189,7 +189,43 @@ extern "C" {
                 &shader_data_buffers.at(i).allocation,
                 &shader_data_buffers.at(i).allocation_info
             );
+
+            auto buffer_info = VkBufferDeviceAddressInfo{
+                .sType  = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO,
+                .buffer = shader_data_buffers.at(i).buffer,
+            };
+            shader_data_buffers.at(i).address = vkGetBufferDeviceAddress(device, &buffer_info);
         }
+
+        auto semaphore_create_info = VkSemaphoreCreateInfo{
+            .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
+        };
+
+        auto fence_create_info = VkFenceCreateInfo{
+            .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+        };
+
+        auto fences             = std::array<VkFence, frames_in_flight>();
+        auto present_semaphores = std::array<VkSemaphore, frames_in_flight>();
+        auto render_semaphores  = std::vector<VkSemaphore>(swapchain_images.size());
+
+        for(auto i = 0; i < frames_in_flight; i++) {
+            vkCreateFence(device, &fence_create_info, nullptr, &fences.at(i));
+            vkCreateSemaphore(device, &semaphore_create_info, nullptr, &present_semaphores.at(i));
+        }
+
+        for(auto& semaphore: render_semaphores) {
+            vkCreateSemaphore(device, &semaphore_create_info, nullptr, &semaphore);
+        }
+
+        SDL_Log("Created semaphores and fences");
+
+        auto command_pool    = core::rendering::create_command_pool(device, queue_index);
+        auto command_buffers = core::rendering::create_command_buffers(
+            device, command_pool, frames_in_flight
+        );
+
+        SDL_Log("Command pool and buffers created");
     }
 
     CORE_RENDERING_EXPORT auto deinitialize(ecs_world_t* _) -> void {}

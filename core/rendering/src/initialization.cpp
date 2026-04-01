@@ -163,18 +163,18 @@ auto create_swapchain(VkDevice dev, VkSurfaceKHR surf, VkSurfaceCapabilitiesKHR 
     -> VkSwapchainKHR {
     auto image_format = VK_FORMAT_B8G8R8A8_SRGB;
     auto create_info  = VkSwapchainCreateInfoKHR{
-         .sType            = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
-         .surface          = surf,
-         .minImageCount    = caps.minImageCount,
-         .imageFormat      = image_format,
-         .imageColorSpace  = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR,
-         .imageExtent      = {.width = 640, .height = 480},
-         .imageArrayLayers = 1,
-         .imageUsage       = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
-         .preTransform     = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR,
-         .compositeAlpha   = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
-         .presentMode      = VK_PRESENT_MODE_FIFO_KHR,
-         .oldSwapchain     = nullptr,
+        .sType            = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
+        .surface          = surf,
+        .minImageCount    = caps.minImageCount,
+        .imageFormat      = image_format,
+        .imageColorSpace  = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR,
+        .imageExtent      = {.width = 640, .height = 480},
+        .imageArrayLayers = 1,
+        .imageUsage       = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+        .preTransform     = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR,
+        .compositeAlpha   = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
+        .presentMode      = VK_PRESENT_MODE_FIFO_KHR,
+        .oldSwapchain     = nullptr,
     };
 
     VkSwapchainKHR swapchain = nullptr;
@@ -242,22 +242,49 @@ auto create_depth_image(VmaAllocator allocator, VkFormat format) -> VkImage {
 
 auto create_depth_view(VkDevice dev, VkImage image, VkFormat format) -> VkImageView {
     auto create_info = VkImageViewCreateInfo{
-        .sType    = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-        .image    = image,
-        .viewType = VK_IMAGE_VIEW_TYPE_2D,
-        .format   = format,
-        .subresourceRange =
-            {
-                .aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
-                .levelCount = 1,
-                .layerCount = 1,
-            },
+        .sType            = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+        .image            = image,
+        .viewType         = VK_IMAGE_VIEW_TYPE_2D,
+        .format           = format,
+        .subresourceRange = {
+            .aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
+            .levelCount = 1,
+            .layerCount = 1,
+        },
     };
 
     VkImageView view = nullptr;
     check(vkCreateImageView(dev, &create_info, nullptr, &view));
 
     return view;
+}
+
+auto create_command_pool(VkDevice dev, std::uint32_t qfi) -> VkCommandPool {
+    auto create_info = VkCommandPoolCreateInfo{
+        .sType            = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
+        .flags            = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
+        .queueFamilyIndex = qfi,
+    };
+
+    VkCommandPool pool = nullptr;
+    check(vkCreateCommandPool(dev, &create_info, nullptr, &pool));
+
+    return pool;
+}
+
+auto create_command_buffers(VkDevice dev, VkCommandPool pool, std::uint32_t count)
+    -> std::vector<VkCommandBuffer> {
+
+    auto create_info = VkCommandBufferAllocateInfo{
+        .sType              = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+        .commandPool        = pool,
+        .commandBufferCount = count,
+    };
+
+    auto buffers = std::vector<VkCommandBuffer>(count);
+    check(vkAllocateCommandBuffers(dev, &create_info, buffers.data()));
+
+    return buffers;
 }
 
 } // namespace core::rendering
