@@ -21,6 +21,8 @@ target_sources(core_rendering
         src/components.hpp
         src/initialization.hpp
         src/initialization.cpp
+        src/assets.hpp
+        src/assets.cpp
         src/rendering.cpp
         src/vma.cpp
 )

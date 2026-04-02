@@ -1,5 +1,6 @@
 #include "rendering/export.hpp"
 
+#include "assets.hpp"
 #include "components.hpp"
 #include "initialization.hpp"
 #include <SDL3/SDL.h>
@@ -36,6 +37,7 @@ extern "C" {
 
         auto world = flecs::world{wld};
         world.component<core::rendering::vertex>();
+        world.component<core::rendering::model>();
 
         volkInitialize();
 
@@ -86,52 +88,13 @@ extern "C" {
         auto depth_img  = core::rendering::create_depth_image(allocator, depth_fmt);
         auto depth_view = core::rendering::create_depth_view(device, depth_img, depth_fmt);
 
-        auto attrib    = tinyobj::attrib_t{};
-        auto shapes    = std::vector<tinyobj::shape_t>();
-        auto materials = std::vector<tinyobj::material_t>();
-        if(!tinyobj::LoadObj(
-               &attrib,
-               &shapes,
-               &materials,
-               nullptr,
-               nullptr,
-               R"(/home/ad/dev/plg/core/rendering/assets/teapot.obj)"
-           )) {
-            SDL_Log("Failed to load obj");
-        }
-
+        auto mesh = core::rendering::load_obj(
+            R"(/home/ad/dev/plg/core/rendering/assets/teapot.obj)"
+        );
         SDL_Log("Loaded mesh");
 
-        const VkDeviceSize index_count = shapes[0].mesh.indices.size();
-        auto vertices                  = std::vector<core::rendering::vertex>();
-        auto indices                   = std::vector<std::uint16_t>();
-
-        for(auto& index: shapes.at(0).mesh.indices) {
-            auto vert = core::rendering::vertex{
-                .position =
-                    {
-                        attrib.vertices.at(index.vertex_index * 3),
-                        -attrib.vertices.at(index.vertex_index * 3 + 1),
-                        attrib.vertices.at(index.vertex_index * 3 + 2),
-                    },
-                .normal =
-                    {
-                        attrib.vertices.at(index.normal_index * 3),
-                        -attrib.vertices.at(index.normal_index * 3 + 1),
-                        attrib.vertices.at(index.normal_index * 3 + 2),
-                    },
-                .uv = {
-                    attrib.texcoords.at(index.texcoord_index * 2),
-                    1.0 - attrib.texcoords.at(index.texcoord_index * 2 + 1),
-                },
-            };
-
-            vertices.emplace_back(vert);
-            indices.emplace_back(indices.size());
-        }
-
-        VkDeviceSize vertex_buffer_size = (sizeof(core::rendering::vertex) * vertices.size());
-        VkDeviceSize index_buffer_size  = (sizeof(std::uint16_t) * indices.size());
+        VkDeviceSize vertex_buffer_size = (sizeof(core::rendering::vertex) * mesh.vertices.size());
+        VkDeviceSize index_buffer_size  = (sizeof(std::uint16_t) * mesh.indices.size());
         auto buffer_create_info         = VkBufferCreateInfo{
             .sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
             .size  = vertex_buffer_size + index_buffer_size,
@@ -157,10 +120,10 @@ extern "C" {
             &buffer_alloc_info
         );
 
-        std::memcpy(buffer_alloc_info.pMappedData, vertices.data(), vertex_buffer_size);
+        std::memcpy(buffer_alloc_info.pMappedData, mesh.vertices.data(), vertex_buffer_size);
         std::memcpy(
             ((char*)buffer_alloc_info.pMappedData) + vertex_buffer_size,
-            vertices.data(),
+            mesh.vertices.data(),
             vertex_buffer_size
         );
 
