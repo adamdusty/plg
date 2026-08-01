@@ -61,6 +61,30 @@ extern "C" {
         //     .kind(flecs::OnValidate)
         //     .run(core::rendering::generate_draw_commands);
         // world.system("render_scene").kind(flecs::PostUpdate).run(core::rendering::render_scene);
+        world.system("rendering").kind(flecs::PostUpdate).run([](flecs::iter& iter) {
+            auto app = iter.world().get<core::rendering::application_resources>();
+
+            SDL_GPUCommandBuffer* cmdbuf = SDL_AcquireGPUCommandBuffer(app.device);
+            if(cmdbuf != nullptr) {
+                SDL_GPUTexture* swapchain_texture = nullptr;
+                SDL_AcquireGPUSwapchainTexture(
+                    cmdbuf, app.window, &swapchain_texture, nullptr, nullptr
+                );
+                if(swapchain_texture != nullptr) {
+                    auto cti        = SDL_GPUColorTargetInfo{};
+                    cti.texture     = swapchain_texture;
+                    cti.clear_color = {0.1f, 0.2f, 0.3f, 1.0f};
+                    cti.load_op     = SDL_GPU_LOADOP_CLEAR;
+                    cti.store_op    = SDL_GPU_STOREOP_STORE;
+
+                    SDL_GPURenderPass* render_pass = SDL_BeginGPURenderPass(
+                        cmdbuf, &cti, 1, nullptr
+                    );
+                    SDL_EndGPURenderPass(render_pass);
+                }
+                SDL_SubmitGPUCommandBuffer(cmdbuf);
+            }
+        });
     }
 
     CORE_RENDERING_EXPORT auto deinitialize(ecs_world_t* wld) -> void {
@@ -78,7 +102,7 @@ auto create_application_resources(SDL_Window* win, bool debug, const char* drive
     -> std::expected<application_resources, std::string> {
     auto shader_fmts = SDL_GPU_SHADERFORMAT_DXIL | SDL_GPU_SHADERFORMAT_SPIRV
                      | SDL_GPU_SHADERFORMAT_MSL;
-    auto* dev = SDL_CreateGPUDevice(shader_fmts, debug, driver);
+    auto* dev        = SDL_CreateGPUDevice(shader_fmts, debug, driver);
     if(dev == nullptr) {
         return std::unexpected("Failed to create device");
     }

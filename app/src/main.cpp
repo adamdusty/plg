@@ -75,7 +75,7 @@ auto main(int /*argc*/, char* /*argv*/[]) -> int {
         SPDLOG_INFO("Initialized module {}", met.module_id());
     };
 
-    world.import <flecs::stats>();
+    world.import<flecs::stats>();
     world.set<flecs::Rest>({});
 
     SPDLOG_INFO("Starting systems");

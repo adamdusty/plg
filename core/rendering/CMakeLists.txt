@@ -27,6 +27,12 @@ target_sources(core_rendering
 )
 
 
+set_target_properties(core_rendering PROPERTIES
+    OUTPUT_NAME "rendering"
+    PREFIX  ""
+)
+
+
 include(GenerateExportHeader)
 generate_export_header(
     core_rendering

@@ -3,6 +3,7 @@
 #include "sdk/export.hpp"
 #include <expected>
 #include <filesystem>
+#include <vector>
 
 namespace fs = std::filesystem;
 

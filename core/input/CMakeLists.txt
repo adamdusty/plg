@@ -3,6 +3,7 @@ if(NOT TARGET plg_sdk)
 endif()
 
 add_library(core_input MODULE)
+target_link_libraries(core_input PUBLIC plg::sdk)
 target_sources(core_input
     PUBLIC
         FILE_SET generated_headers
@@ -14,7 +15,10 @@ target_sources(core_input
         src/input.cpp
 )
 
-target_link_libraries(core_input PUBLIC plg::sdk)
+set_target_properties(core_input PROPERTIES
+    OUTPUT_NAME "input"
+    PREFIX  ""
+)
 
 include(GenerateExportHeader)
 generate_export_header(

@@ -35,7 +35,8 @@ target_sources(plg_app
 target_link_libraries(plg_app plg_lib)
 
 if(WIN32)
-add_custom_command(TARGET plg_app POST_BUILD
+add_custom_command(
+    TARGET plg_app POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:plg_app> $<TARGET_FILE_DIR:plg_app>
     COMMAND_EXPAND_LISTS
 )
@@ -43,13 +44,7 @@ endif()
 
 
 add_custom_command(
-    TARGET plg_app
-    POST_BUILD
+    TARGET plg_app POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E make_directory "${PACKAGE_DIR}"
     COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:plg_app>" "${PACKAGE_DIR}"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        $<TARGET_RUNTIME_DLLS:plg_app>
-        "${PACKAGE_DIR}"
-        COMMAND_EXPAND_LISTS
-            
 )

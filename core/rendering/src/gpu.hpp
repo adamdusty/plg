@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SDL3/SDL.h>
+#include <cstring>
 #include <expected>
 #include <optional>
 #include <string>
