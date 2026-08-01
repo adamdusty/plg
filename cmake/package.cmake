@@ -1,0 +1,1 @@
+set(PACKAGE_DIR "${CMAKE_BINARY_DIR}/package")

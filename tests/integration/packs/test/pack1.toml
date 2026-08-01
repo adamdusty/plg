@@ -1,0 +1,18 @@
+namespace = "test"
+name = "pack1"
+version = "1.2.3-alpha"
+short_description = "A pack for testing"
+long_description = "A longer description of this pack"
+
+dependencies = [
+    {
+        namespace = "test",
+        name = "module1",
+        version = "1.2.3",
+    },
+    {
+        namespace = "test",
+        name = "module2",
+        version = "0.2.4",
+    },
+]

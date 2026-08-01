@@ -1,0 +1,7 @@
+.justfile
+.clangd
+.idea/
+.vs/
+.vscode/
+build/
+CMakeUserPresets.json

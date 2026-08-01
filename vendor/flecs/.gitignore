@@ -1,0 +1,12 @@
+bin
+gcov
+*.pdb
+deps
+cmake-build-debug
+bazel-*
+**/CMakeFiles/*
+out
+docs/html
+MODULE.bazel.lock
+.*
+.*/*

@@ -1,0 +1,31 @@
+Checks: "*,
+  -abseil-*,
+  -altera-*,
+  -android-*,
+  -fuchsia-*,
+  -google-*,
+  -llvm*,
+  -zircon-*,
+  -bugprone-easily-swappable-parameters,
+  -readability-else-after-return,
+  -readability-static-accessed-through-instance,
+  -readability-avoid-const-params-in-decls,
+  -readability-magic-numbers,
+  -cppcoreguidelines-non-private-member-variables-in-classes,
+  -cppcoreguidelines-avoid-magic-numbers,
+  -misc-non-private-member-variables-in-classes,
+  -modernize-use-ranges,
+  -modernize-use-designated-initializers,
+  -boost-use-ranges,
+  -hicpp-uppercase-literal-suffix,
+  -hicpp-signed-bitwise,
+  -readability-uppercase-literal-suffix
+"
+
+CheckOptions:
+  - key: readability-identifier-length.IgnoredVariableNames
+    value: 'a|b|x|y|z|_'
+  - key: readability-identifier-length.IgnoredParameterNames
+    value: 'a|b|x|y|z|_'
+  - key: modernize-use-trailing-return-type.TransformLambdas
+    value: none
